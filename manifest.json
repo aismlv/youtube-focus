@@ -1,0 +1,29 @@
+{
+    "manifest_version": 2,
+    "name": "YouTube Video Hider",
+    "version": "1.0.13",
+    "permissions": [
+        "storage",
+        "activeTab",
+        "https://www.youtube.com/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.youtube.com/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "browser_action": {
+        "default_popup": "popup.html"
+    }
+}
