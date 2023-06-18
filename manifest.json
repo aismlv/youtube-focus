@@ -1,12 +1,21 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "YouTube Sift",
     "version": "1.0.18",
     "permissions": [
         "storage",
-        "activeTab",
+        "activeTab"
+    ],
+    "host_permissions": [
         "https://www.youtube.com/*"
     ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "assets/icon.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
     "content_scripts": [
         {
             "matches": [
@@ -16,15 +25,5 @@
                 "content.js"
             ]
         }
-    ],
-    "background": {
-        "scripts": [
-            "background.js"
-        ],
-        "persistent": false
-    },
-    "browser_action": {
-        "default_popup": "popup.html",
-        "default_icon": "assets/icon.png"
-    }
+    ]
 }
