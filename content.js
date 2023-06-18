@@ -1,11 +1,19 @@
-console.log("Content script has been loaded");
+const DEBUG = false;
+
+function logDebug(...args) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
+
+logDebug("Content script has been loaded");
 
 chrome.storage.sync.get(['channelBlocklist', 'videoBlocklist'], (result) => {
-    console.log("Fetching blocklists: ", result);
+    logDebug("Fetching blocklists: ", result);
     const channelBlocklist = result.channelBlocklist || [];
     const videoBlocklist = result.videoBlocklist || [];
-    console.log("Channel Blocklist: ", channelBlocklist);
-    console.log("Video Blocklist: ", videoBlocklist);
+    logDebug("Channel Blocklist: ", channelBlocklist);
+    logDebug("Video Blocklist: ", videoBlocklist);
 
     // Block existing videos
     blockVideos(channelBlocklist, videoBlocklist);
@@ -32,10 +40,10 @@ function blockVideos(channelBlocklist, videoBlocklist) {
         // Check if the title element exists
         if (titleElement) {
             let title = titleElement.innerText;
-            console.log('Video Title: ', title);  // log the title of each video
+            logDebug('Video Title: ', title);  // log the title of each video
 
             let channelName = channelElement ? channelElement.innerText : "No channel found for video";
-            console.log('Channel Name: ', channelName);  // log the channel name of each video
+            logDebug('Channel Name: ', channelName);  // log the channel name of each video
 
             let blockTitle = videoBlocklist.some(blockItem => title.toLowerCase().includes(blockItem.toLowerCase()));
             let blockChannel = channelBlocklist.some(blockItem => channelName.toLowerCase().includes(blockItem.toLowerCase()));
@@ -45,7 +53,7 @@ function blockVideos(channelBlocklist, videoBlocklist) {
                 video.remove();
             }
         } else {
-            console.log('No title found for video');  // log when no title is found
+            logDebug('No title found for video');  // log when no title is found
         }
     });
 }

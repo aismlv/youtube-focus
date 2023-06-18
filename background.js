@@ -1,6 +1,14 @@
-console.log("Background script has been loaded");
+const DEBUG = false;
+
+function logDebug(...args) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
+
+logDebug("Background script has been loaded");
 chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync' && changes.blocklist) {
-        console.log('Blocklist changed:', changes.blocklist.newValue);  // added log
+        logDebug('Blocklist changed:', changes.blocklist.newValue);  // added log
     }
 });

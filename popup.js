@@ -1,4 +1,11 @@
 const SEPARATOR = '\n';
+const DEBUG = false;
+
+function logDebug(...args) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     loadBlocklist();
@@ -22,13 +29,13 @@ function loadBlocklist() {
 }
 
 function saveBlocklist() {
-    console.log('Save button has been pressed'); // log button press
+    logDebug('Save button has been pressed'); // log button press
     const blocklistType = getSelectedBlocklist();
     const blocklist = document.getElementById('blocklist').value.split(SEPARATOR).map(s => s.trim()).filter(Boolean);
     let data = {};
     data[blocklistType] = blocklist;
     chrome.storage.sync.set(data, function () {
-        console.log('Blocklist is set to ', blocklist);
+        logDebug('Blocklist is set to ', blocklist);
         document.getElementById('status').innerText = 'Updated. Reload the page or scroll down to load new videos to take effect';
         setTimeout(function () { document.getElementById('status').innerText = ''; }, 3000);
     });
