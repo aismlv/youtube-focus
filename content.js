@@ -1,23 +1,25 @@
 console.log("Content script has been loaded");
 
-chrome.storage.sync.get('blocklist', (result) => {
-    console.log("Fetching blocklist: ", result);
-    const blocklist = result.blocklist || [];
-    console.log("Blocklist: ", blocklist);
+chrome.storage.sync.get(['channelBlocklist', 'videoBlocklist'], (result) => {
+    console.log("Fetching blocklists: ", result);
+    const channelBlocklist = result.channelBlocklist || [];
+    const videoBlocklist = result.videoBlocklist || [];
+    console.log("Channel Blocklist: ", channelBlocklist);
+    console.log("Video Blocklist: ", videoBlocklist);
 
     // Block existing videos
-    blockVideos(blocklist);
+    blockVideos(channelBlocklist, videoBlocklist);
 
     // Set up a MutationObserver to block future videos
     let observer = new MutationObserver(() => {
-        blockVideos(blocklist);
+        blockVideos(channelBlocklist, videoBlocklist);
     });
 
     // Start observing the document with the configured parameters
     observer.observe(document, { childList: true, subtree: true });
 });
 
-function blockVideos(blocklist) {
+function blockVideos(channelBlocklist, videoBlocklist) {
     // List all videos
     let videos = document.querySelectorAll('ytd-grid-video-renderer,#dismissible');
 
@@ -32,18 +34,19 @@ function blockVideos(blocklist) {
             let title = titleElement.innerText;
             console.log('Video Title: ', title);  // log the title of each video
 
-            let channelName = channelElement.innerText;
+            let channelName = channelElement ? channelElement.innerText : "No channel found for video";
             console.log('Channel Name: ', channelName);  // log the channel name of each video
 
-            // If the title matches any name in the blocklist
-            blocklist.forEach(blockItem => {
-                if (title.includes(blockItem.toLowerCase()) || channelName.includes(blockItem.toLowerCase())) {
-                    console.log("Blocked video: ", title, "Blocklist item: ", blockItem);  // log when a video is blocked
-                    video.remove();
-                }
-            });
+            let blockTitle = videoBlocklist.some(blockItem => title.toLowerCase().includes(blockItem.toLowerCase()));
+            let blockChannel = channelBlocklist.some(blockItem => channelName.toLowerCase().includes(blockItem.toLowerCase()));
+
+            if (blockTitle || blockChannel) {
+                console.log("Blocked: ", title, " from channel: ", channelName);  // log when a video is blocked
+                video.remove();
+            }
         } else {
             console.log('No title found for video');  // log when no title is found
         }
     });
 }
+
