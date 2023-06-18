@@ -1,13 +1,21 @@
 console.log("Content script has been loaded");
 
-setTimeout(() => {  // added delay
-    chrome.storage.sync.get('blocklist', (result) => {
-        console.log("Fetching blocklist: ", result);
-        const blocklist = result.blocklist || [];
-        console.log("Blocklist: ", blocklist);
+chrome.storage.sync.get('blocklist', (result) => {
+    console.log("Fetching blocklist: ", result);
+    const blocklist = result.blocklist || [];
+    console.log("Blocklist: ", blocklist);
+
+    // Block existing videos
+    blockVideos(blocklist);
+
+    // Set up a MutationObserver to block future videos
+    let observer = new MutationObserver(() => {
         blockVideos(blocklist);
     });
-}, 2000);  // 2-second delay
+
+    // Start observing the document with the configured parameters
+    observer.observe(document, { childList: true, subtree: true });
+});
 
 function blockVideos(blocklist) {
     // List all videos
@@ -24,7 +32,7 @@ function blockVideos(blocklist) {
             let title = titleElement.innerText;
             console.log('Video Title: ', title);  // log the title of each video
 
-            let channelName = channelElement ? channelElement.textContent.toLowerCase() : "No channel found for video";
+            let channelName = channelElement.innerText;
             console.log('Channel Name: ', channelName);  // log the channel name of each video
 
             // If the title matches any name in the blocklist
