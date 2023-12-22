@@ -10,8 +10,9 @@ logDebug("Content script has been loaded");
 
 chrome.storage.sync.get(['channelBlocklist', 'videoBlocklist'], (result) => {
     logDebug("Fetching blocklists: ", result);
-    const channelBlocklist = result.channelBlocklist || [];
-    const videoBlocklist = result.videoBlocklist || [];
+    const channelBlocklist = result.channelBlocklist.map(item => item.toLowerCase()) || [];
+    const videoBlocklist = result.videoBlocklist.map(item => item.toLowerCase()) || [];
+
     logDebug("Channel Blocklist: ", channelBlocklist);
     logDebug("Video Blocklist: ", videoBlocklist);
 
@@ -45,8 +46,8 @@ function blockVideos(channelBlocklist, videoBlocklist) {
             let channelName = channelElement ? channelElement.innerText : "No channel found for video";
             logDebug('Channel Name: ', channelName);  // log the channel name of each video
 
-            let blockTitle = videoBlocklist.some(blockItem => title.toLowerCase().includes(blockItem.toLowerCase()));
-            let blockChannel = channelBlocklist.some(blockItem => channelName.toLowerCase().includes(blockItem.toLowerCase()));
+            let blockTitle = videoBlocklist.some(blockItem => title.toLowerCase().includes(blockItem));
+            let blockChannel = channelBlocklist.some(blockItem => channelName.toLowerCase().includes(blockItem));
 
             if (blockTitle || blockChannel) {
                 console.log("Blocked: ", title, " from channel: ", channelName);  // log when a video is blocked
