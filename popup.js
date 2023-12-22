@@ -21,7 +21,9 @@ function loadBlocklist() {
     let blocklistType = getSelectedBlocklist();
     chrome.storage.sync.get(blocklistType, function (data) {
         if (data[blocklistType]) {
-            document.getElementById('blocklist').value = data[blocklistType].join(SEPARATOR);
+            // Sort the blocklist alphabetically
+            const sortedBlocklist = data[blocklistType].sort();
+            document.getElementById('blocklist').value = sortedBlocklist.join(SEPARATOR);
         } else {
             document.getElementById('blocklist').value = '';
         }
@@ -32,10 +34,12 @@ function saveBlocklist() {
     logDebug('Save button has been pressed'); // log button press
     const blocklistType = getSelectedBlocklist();
     const blocklist = document.getElementById('blocklist').value.split(SEPARATOR).map(s => s.trim()).filter(Boolean);
+    // Sort the blocklist alphabetically
+    const sortedBlocklist = blocklist.sort();
     let data = {};
-    data[blocklistType] = blocklist;
+    data[blocklistType] = sortedBlocklist;
     chrome.storage.sync.set(data, function () {
-        logDebug('Blocklist is set to ', blocklist);
+        logDebug('Blocklist is set to ', sortedBlocklist);
         document.getElementById('status').innerText = 'Updated. Reload the page or scroll down to load new videos to take effect';
         setTimeout(function () { document.getElementById('status').innerText = ''; }, 3000);
     });
